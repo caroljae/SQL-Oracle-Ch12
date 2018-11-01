@@ -1,0 +1,195 @@
+Carol Goodnight
+
+
+
+Q1-------------------
+SQL> select title, retail
+  2  from books
+  3  where retail > (select AVG(retail)
+  4  			from books);
+
+TITLE                              RETAIL                                                                               
+------------------------------ ----------                                                                               
+BUILDING A CAR WITH TOOTHPICKS      59.95                                                                               
+DATABASE IMPLEMENTATION             55.95                                                                               
+HOLY GRAIL OF ORACLE                75.95                                                                               
+E-BUSINESS THE EASY WAY              54.5                                                                               
+PAINLESS CHILD-REARING              89.95                                                                               
+
+SQL> 
+SQL> 
+Q2-------------------------
+
+
+  1  select a.title, b.category, a.cost
+  2  from books a,(select category, AVG(cost) averagecost
+  3  from books
+  4  group by category) b
+  5  where a.category = b.category
+  6* AND a.cost <b.averagecost
+SQL> /
+
+TITLE                          CATEGORY           COST                                                                  
+------------------------------ ------------ ----------                                                                  
+HANDCRANKED COMPUTERS          COMPUTER           21.8                                                                  
+DATABASE IMPLEMENTATION        COMPUTER           31.4                                                                  
+COOKING WITH MUSHROOMS         COOKING            12.5                                                                  
+BIG BEAR AND LITTLE DOVE       CHILDREN           5.32                                                                  
+REVENGE OF MICKEY              FAMILY LIFE        14.2                                                                  
+
+SQL> 
+SQL> 
+Q3------------------------------
+SQL> select order#
+  2  from orders
+  3  where shipstate = (select shipstate
+  4  from orders
+  5  where order# = 1014);
+
+    ORDER#                                                                                                              
+----------                                                                                                              
+      1007                                                                                                              
+      1014                                                                                                              
+
+SQL> 
+SQL> 
+Q4-----------------------------------
+SQL> select order#, SUM(quantity * paideach)
+  2  from orderitems
+  3  group by order#
+  4  having SUM(quantity * paideach) >
+  5  (select SUM(quantity * paideach)
+  6  from orderitems
+  7  where order# = 1008);
+
+    ORDER# SUM(QUANTITY*PAIDEACH)                                                                                       
+---------- ----------------------                                                                                       
+      1003                 106.85                                                                                       
+      1009                  41.95                                                                                       
+      1011                  85.45                                                                                       
+      1013                  55.95                                                                                       
+      1016                  85.45                                                                                       
+      1006                   54.5                                                                                       
+      1001                  117.4                                                                                       
+      1002                  111.9                                                                                       
+      1007                 335.85                                                                                       
+      1004                  170.9                                                                                       
+      1010                  55.95                                                                                       
+      1005                  39.95                                                                                       
+      1014                     44                                                                                       
+      1012                  166.4                                                                                       
+      1018                   75.9                                                                                       
+
+15 rows selected.
+
+Q5-------------------------------
+
+Wrote file afiedt.buf
+
+  1  select lname, fname
+  2  from bookauthor join author using(authorid)
+  3  where isbn in
+  4  (select isbn
+  5  from orderitems
+  6  group by isbn
+  7  having sum(quantity) =
+  8  (select max(count(*))
+  9  from orderitems
+ 10* group by isbn))
+SQL> /
+
+LNAME      FNAME                                                                                                        
+---------- ----------                                                                                                   
+PETERSON   TINA                                                                                                         
+AUSTIN     JAMES                                                                                                        
+ADAMS      JUAN                                                                                                         
+
+SQL> 
+SQL> 
+Q6--------------------------------------
+
+  1  select title
+  2  from books
+  3  where category in
+  4  (select distinct category
+  5  from books join orderitems using(isbn)
+  6  join orders using(order#)
+  7  where customer# = 1007)
+  8  and isbn not in
+  9  (select isbn
+ 10  from orders join orderitems using(order#)
+ 11* where customer# = 1007)
+SQL> /
+
+TITLE                                                                                                                   
+------------------------------                                                                                          
+BUILDING A CAR WITH TOOTHPICKS                                                                                          
+HANDCRANKED COMPUTERS                                                                                                   
+PAINLESS CHILD-REARING                                                                                                  
+
+SQL> 
+SQL> 
+Q7--------------------------------
+SQL> select shipcity, shipstate
+  2  from orders
+  3  where shipdate-orderdate =
+  4  (select max(shipdate-orderdate)
+  5  from orders);
+
+SHIPCITY        SH                                                                                                      
+--------------- --                                                                                                      
+TRENTON         NJ                                                                                                      
+
+SQL> 
+Q8-------------------------------------
+SQL> 
+SQL> select customer#
+  2  from customers join orders using(customer#) join orderitems using (order#) join
+  3  books using(isbn)
+  4  where retail =
+  5  (select min(retail)
+  6  from books);
+
+ CUSTOMER#                                                                                                              
+----------                                                                                                              
+      1007                                                                                                              
+      1015                                                                                                              
+      1017                                                                                                              
+
+SQL> 
+SQL> 
+Q9---------------------------------
+
+
+  1  select count(distinct customer#)
+  2  from orders join orderitems using(order#)
+  3  where isbn in
+  4  (select isbn
+  5  from orderitems join bookauthor using(isbn)
+  6  join author using(authorid)
+  7  where lname = 'AUSTIN'
+  8* and fname = 'JAMES')
+SQL> /
+
+COUNT(DISTINCTCUSTOMER#)                                                                                                
+------------------------                                                                                                
+                       5                                                                                                
+
+SQL> 
+SQL> 
+Q10--------------------------------------
+SQL> select title
+  2  from books
+  3  where pubid =
+  4  (select pubid
+  5  from books
+  6  where title = 'THE WOK WAY TO COOK');
+
+TITLE                                                                                                                   
+------------------------------                                                                                          
+BODYBUILD IN 10 MINUTES A DAY                                                                                           
+COOKING WITH MUSHROOMS                                                                                                  
+THE WOK WAY TO COOK                                                                                                     
+HOW TO GET FASTER PIZZA                                                                                                 
+
+SQL> spool off
