@@ -1,8 +1,4 @@
-Carol Goodnight
 
-
-
-Q1-------------------
 SQL> select title, retail
   2  from books
   3  where retail > (select AVG(retail)
@@ -18,7 +14,7 @@ PAINLESS CHILD-REARING              89.95
 
 SQL> 
 SQL> 
-Q2-------------------------
+
 
 
   1  select a.title, b.category, a.cost
@@ -39,7 +35,7 @@ REVENGE OF MICKEY              FAMILY LIFE        14.2
 
 SQL> 
 SQL> 
-Q3------------------------------
+
 SQL> select order#
   2  from orders
   3  where shipstate = (select shipstate
@@ -53,7 +49,7 @@ SQL> select order#
 
 SQL> 
 SQL> 
-Q4-----------------------------------
+
 SQL> select order#, SUM(quantity * paideach)
   2  from orderitems
   3  group by order#
@@ -82,7 +78,7 @@ SQL> select order#, SUM(quantity * paideach)
 
 15 rows selected.
 
-Q5-------------------------------
+
 
 Wrote file afiedt.buf
 
@@ -106,7 +102,7 @@ ADAMS      JUAN
 
 SQL> 
 SQL> 
-Q6--------------------------------------
+
 
   1  select title
   2  from books
@@ -129,7 +125,7 @@ PAINLESS CHILD-REARING
 
 SQL> 
 SQL> 
-Q7--------------------------------
+
 SQL> select shipcity, shipstate
   2  from orders
   3  where shipdate-orderdate =
@@ -141,7 +137,7 @@ SHIPCITY        SH
 TRENTON         NJ                                                                                                      
 
 SQL> 
-Q8-------------------------------------
+
 SQL> 
 SQL> select customer#
   2  from customers join orders using(customer#) join orderitems using (order#) join
@@ -158,7 +154,7 @@ SQL> select customer#
 
 SQL> 
 SQL> 
-Q9---------------------------------
+
 
 
   1  select count(distinct customer#)
@@ -177,7 +173,7 @@ COUNT(DISTINCTCUSTOMER#)
 
 SQL> 
 SQL> 
-Q10--------------------------------------
+
 SQL> select title
   2  from books
   3  where pubid =
